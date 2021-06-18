@@ -45,7 +45,55 @@ function draw_arrow(){
   }
 }
 
+function draw_button(row, parent_node, branch_index){
+  var top_pixels = 0;
+  var left_pixels = branch_index * 100;
+
+
+  if(parent_node !== null){
+    var parent_node_top = $("#" + parent_node).css("top").replace("px","");
+    var parent_node_left = $("#" + parent_node).css("left").replace("px","");
+    parent_node_top = parseFloat(parent_node_top);
+    parent_node_left = parseFloat(parent_node_left);
+
+    top_pixels = parent_node_top + 100;
+    left_pixels = left_pixels + parent_node_left;
+
+    console.log("left_pixels");
+    console.log(left_pixels);
+  }
+  var this_button = $("<button>");
+  this_button.html(row.text)
+    .addClass("btn")
+    .addClass("btn-primary")
+    .addClass("flow-node")
+    .css("position", "absolute")
+    .css("top", top_pixels + "px")
+    .css("left", left_pixels + "px")
+    .css("display", "none")
+    .prop("id",row.location);
+  return this_button;
+}
+
+
 var rows_to_process = [];
+
+function add_button(this_button, row){
+  $("#map").append(this_button[0].outerHTML);
+  $("#" + row.location).fadeIn(500);
+  if(row.branches == ""){
+    // do nothing
+  } else {
+    var branches = row.branches.split(",");
+    branches.forEach(function(branch, branch_index){
+      var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
+      rows_to_process.push([this_row, row_no+1, row.location, branch_index/branches.length]);
+    });
+  }
+  setTimeout(function(){
+    draw_node();
+  },200);
+}
 
 function draw_node(){
   if(rows_to_process.length == 0){
@@ -60,64 +108,13 @@ function draw_node(){
         left: "+=100",
         top: "+=100"
       },function(){
-
+        this_button = draw_button(row, parent_node, branch_index);
+        add_button(this_button, row);
       })
-    }
-
-
-    var this_button = $("<button>");
-    var top_pixels = 0;
-    var left_pixels = branch_index * 100;
-
-
-    if(parent_node !== null){
-      var parent_node_top = $("#" + parent_node).css("top").replace("px","");
-      var parent_node_left = $("#" + parent_node).css("left").replace("px","");
-      parent_node_top = parseFloat(parent_node_top);
-      parent_node_left = parseFloat(parent_node_left);
-
-      top_pixels = parent_node_top + 100;
-      left_pixels = left_pixels + parent_node_left;
-
-      console.log("left_pixels");
-      console.log(left_pixels);
-    }
-
-
-
-    this_button.html(row.text)
-      .addClass("btn")
-      .addClass("btn-primary")
-      .addClass("flow-node")
-      .css("position", "absolute")
-      .css("top", top_pixels + "px")
-      .css("left", left_pixels + "px")
-      .css("display", "none")
-      .prop("id",row.location);
-
-
-
-    $("#map").append(this_button[0].outerHTML);
-    $("#" + row.location).fadeIn(500);
-
-
-
-    if(row.branches == ""){
-      // do nothing
     } else {
-      var branches = row.branches.split(",");
-
-      /*maximum width divided by branch index */
-
-
-      branches.forEach(function(branch, branch_index){
-        var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
-        rows_to_process.push([this_row, row_no+1, row.location, branch_index/branches.length]);
-      });
+      this_button = draw_button(row, parent_node, branch_index);
+      add_button(this_button, row)
     }
-    setTimeout(function(){
-      draw_node();
-    },200);
   }
 }
 
