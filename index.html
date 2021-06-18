@@ -1,0 +1,127 @@
+<!--
+
+  GNU GENERAL PUBLIC LICENSE
+  Version 3, 29 June 2007
+  (see LICENSE)
+
+  spreadsheet-flowchart creator
+
+  by Anthony Haffey and Nico Biagi from Scientific Open Solutions
+
+-->
+<script src="libraries/jquery-3.3.1.min.js"></script>
+<script src="libraries/bootstrap.4.0.min.js"></script>
+<script src="libraries/bootbox.4.4.0.min.js"></script>
+<script src="libraries/leader-line.min.js"></script>
+<script src="libraries/papaparse.4.3.6.min.js"></script>
+
+<link rel="stylesheet" href="libraries/bootstrapCollector.css">
+
+
+
+<div id="map"></div>
+<script>
+
+/*
+* always try to put branches as far away from each other as possible
+* up to 8 branches to reflect 3 x 3 grid around a position
+*/
+
+function draw_node(row, row_no, parent_node, branch_index){
+  var this_button = $("<button>");
+    var top_pixels = 0;
+    var left_pixels = branch_index * 100;
+
+
+    if(parent_node !== null){
+      var parent_node_top = $("#" + parent_node).css("top").replace("px","");
+      var parent_node_left = $("#" + parent_node).css("left").replace("px","");
+      parent_node_top = parseFloat(parent_node_top);
+      parent_node_left = parseFloat(parent_node_left);
+
+      top_pixels = parent_node_top + 100;
+      left_pixels = left_pixels + parent_node_left;
+
+      console.log("left_pixels");
+      console.log(left_pixels);
+    }
+
+
+
+    this_button.html(row.text)
+      .addClass("btn")
+      .addClass("btn-primary")
+      .prop("id",row.location)
+      .css("position", "absolute")
+      .css("top", top_pixels + "px")
+      .css("left", left_pixels + "px");
+
+
+
+  $("#map").append(this_button[0].outerHTML);
+
+  if(parent_node !== null){
+    new LeaderLine(
+      document.getElementById(parent_node),
+      document.getElementById(row.location),
+        {
+          color: "red",
+          size:  2,
+          end_socket: "top",
+          path:  "straight"
+        }
+    );
+  }
+
+  if(row.branches == ""){
+    // do nothing
+  } else {
+    var branches = row.branches.split(",");
+
+    /*maximum width divided by branch index */
+
+
+    branches.forEach(function(branch, branch_index){
+      var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
+      draw_node(this_row, row_no+1, row.location, branch_index);
+    });
+  }
+}
+
+var csv_data;
+$.get("flowdata.csv", function(data){
+  csv_data = Papa.parse(data, {
+    header: true }
+  ).data;
+  console.log(csv_data);
+
+  draw_node(csv_data[0], 0, null, 1);
+
+  /*
+
+  //console.log(csv_data);
+  csv_data.forEach(function(row){
+
+    /*
+    var flow_row = flow_map.findIndex(flow_row => flow_row.indexOf(row.location) !== -1);
+    if(typeof(flow_map[flow_row + 1]) == "undefined"){
+      flow_map[flow_row + 1] = [];
+    }
+    */
+  //});
+
+});
+
+/*
+* draw button
+var button_html = $("<button>");
+    button_html.addClass("btn btn-primary")
+      .html(row.text);
+$("#map").html($("#map").html() + button_html[0].outerHTML);
+
+/*
+* draw lines
+var branches = row.branches.split(",");
+*/
+
+</script>
