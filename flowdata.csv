@@ -1,11 +1,11 @@
-choice	location	text	branches	parent	row_no
-start	start	"Is the issue academic, administrative or personal?"	"administrative,academic,personal"		
-Administrative	administrative	Is it about your timetable?			
-Academic	academic	Is it specific to one module?			
-Personal	personal	text for Personal here?			
-yes	ask_a_q	Beep			
-no	tech	bop			
-yes					
-no					
-yes					
-no					
+﻿choice,location,text,branches,parent,row_no
+start,start,"Is the issue academic, administrative or personal?","administrative,academic,personal",,
+Administrative,administrative,Is it about your timetable?,,,
+Academic,academic,Is it specific to one module?,,,
+Personal,personal,text for Personal here?,,,
+yes,ask_a_q,Beep,,,
+no,tech,bop,,,
+yes,,,,,
+no,,,,,
+yes,,,,,
+no,,,,,

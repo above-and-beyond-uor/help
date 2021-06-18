@@ -67,10 +67,21 @@ function draw_node(row, row_no, parent_node, branch_index){
         {
           color: "red",
           size:  2,
-          end_socket: "top",
-          path:  "straight"
+          startSocket: "auto",
+          endSocket: "top",
+          path:  "straight",
+          startPlug: 'behind',
+          endPlug: 'arrow1'
         }
     );
+
+    console.log("parent_node");
+    console.log(parent_node);
+
+    console.log("row.location");
+    console.log(row.location);
+
+
   }
 
   if(row.branches == ""){
