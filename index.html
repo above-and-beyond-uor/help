@@ -27,8 +27,45 @@
 * up to 8 branches to reflect 3 x 3 grid around a position
 */
 
-function draw_node(row, row_no, parent_node, branch_index){
-  var this_button = $("<button>");
+function draw_arrow(){
+  if(parent_node !== null){
+    new LeaderLine(
+      document.getElementById(parent_node),
+      document.getElementById(row.location),
+        {
+          color: "red",
+          size:  2,
+          startSocket: "auto",
+          endSocket: "top",
+          path:  "straight",
+          startPlug: 'behind',
+          endPlug: 'arrow1'
+        }
+    );
+  }
+}
+
+var rows_to_process = [];
+
+function draw_node(){
+  if(rows_to_process.length == 0){
+    //you're done
+  } else {
+    [row, row_no, parent_node, branch_index] = rows_to_process.shift();
+    /*
+    * move everything down if branch_index == 0
+    */
+    if(branch_index == 0){
+      $(".flow-node").animate({
+        left: "+=100",
+        top: "+=100"
+      },function(){
+
+      })
+    }
+
+
+    var this_button = $("<button>");
     var top_pixels = 0;
     var left_pixels = branch_index * 100;
 
@@ -51,51 +88,36 @@ function draw_node(row, row_no, parent_node, branch_index){
     this_button.html(row.text)
       .addClass("btn")
       .addClass("btn-primary")
-      .prop("id",row.location)
+      .addClass("flow-node")
       .css("position", "absolute")
       .css("top", top_pixels + "px")
-      .css("left", left_pixels + "px");
+      .css("left", left_pixels + "px")
+      .css("display", "none")
+      .prop("id",row.location);
 
 
 
-  $("#map").append(this_button[0].outerHTML);
-
-  if(parent_node !== null){
-    new LeaderLine(
-      document.getElementById(parent_node),
-      document.getElementById(row.location),
-        {
-          color: "red",
-          size:  2,
-          startSocket: "auto",
-          endSocket: "top",
-          path:  "straight",
-          startPlug: 'behind',
-          endPlug: 'arrow1'
-        }
-    );
-
-    console.log("parent_node");
-    console.log(parent_node);
-
-    console.log("row.location");
-    console.log(row.location);
+    $("#map").append(this_button[0].outerHTML);
+    $("#" + row.location).fadeIn(500);
 
 
-  }
 
-  if(row.branches == ""){
-    // do nothing
-  } else {
-    var branches = row.branches.split(",");
+    if(row.branches == ""){
+      // do nothing
+    } else {
+      var branches = row.branches.split(",");
 
-    /*maximum width divided by branch index */
+      /*maximum width divided by branch index */
 
 
-    branches.forEach(function(branch, branch_index){
-      var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
-      draw_node(this_row, row_no+1, row.location, branch_index);
-    });
+      branches.forEach(function(branch, branch_index){
+        var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
+        rows_to_process.push([this_row, row_no+1, row.location, branch_index/branches.length]);
+      });
+    }
+    setTimeout(function(){
+      draw_node();
+    },200);
   }
 }
 
@@ -105,8 +127,8 @@ $.get("flowdata.csv", function(data){
     header: true }
   ).data;
   console.log(csv_data);
-
-  draw_node(csv_data[0], 0, null, 1);
+  rows_to_process.push([csv_data[0], 0, null, 1]);
+  draw_node();
 
   /*
 
