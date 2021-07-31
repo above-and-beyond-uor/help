@@ -21,7 +21,7 @@
 
 <div id="map"></div>
 <script>
-function draw_node(this_row, generation){
+function draw_node(this_row, generation, x_coordinate, y_coordinate){
   console.log("generation");
   console.log(generation);
 
@@ -35,8 +35,10 @@ function draw_node(this_row, generation){
     .css("top", "50%")
     .css("left", "50%")
     .css("text-align", "center")
-    .css("margin-right", "-50%")
+    //.css("margin-right", "-50%")
+    .css("margin-left", x_coordinate)
     .css("transform", "translate(-50%, -50%)")
+    .css("margin-top", y_coordinate)
     .html(this_row.text);
 
   $("body").append(this_button);
@@ -58,15 +60,28 @@ function draw_node(this_row, generation){
     var this_degrees = branch_index * branch_degrees;
 
     var radius = 200;
+    var y_coordinate = 0 + Math.sin(this_degrees*Math.PI/180) * radius;
+    var x_coordinate = 0 + Math.cos(this_degrees*Math.PI/180) * radius;
 
     var this_new_row = csv_data.filter(function(local_row){
       return local_row.location == this_location;
     })[0];
     if(typeof(this_new_row) !== "undefined"){
-      draw_node(this_new_row, new_generation);
+      draw_node(this_new_row, new_generation, x_coordinate, y_coordinate);
+      console.log("this_degrees");
+      console.log(this_degrees);
+      console.log("y_coordinate");
+      console.log(y_coordinate);
+      console.log("x_coordinate");
+      console.log(x_coordinate);
+
     }
   });
-
+/*
+define x and y coordinates for the button
+y = yCenter + sin(alpha)*radius;
+x = xCenter + cos(alpha)*radius;
+*/
 
 }
 
@@ -82,7 +97,7 @@ $.get("flowdata.csv", function(data){
     header: true }
   ).data;
 
-  draw_node(csv_data[0], 1);
+  draw_node(csv_data[0], 1, 0, 0);
 
 });
 
