@@ -21,137 +21,85 @@
 
 <div id="map"></div>
 <script>
+function draw_node(this_row, generation){
+  console.log("generation");
+  console.log(generation);
 
-/*
-* always try to put branches as far away from each other as possible
-* up to 8 branches to reflect 3 x 3 grid around a position
-*/
+  /*
 
-function draw_arrow(){
-  if(parent_node !== null){
-    new LeaderLine(
-      document.getElementById(parent_node),
-      document.getElementById(row.location),
-        {
-          color: "red",
-          size:  2,
-          startSocket: "auto",
-          endSocket: "top",
-          path:  "straight",
-          startPlug: 'behind',
-          endPlug: 'arrow1'
-        }
-    );
-  }
-}
-
-function draw_button(row, parent_node, branch_index){
-  var top_pixels = 0;
-  var left_pixels = branch_index * 100;
-
-
-  if(parent_node !== null){
-    var parent_node_top = $("#" + parent_node).css("top").replace("px","");
-    var parent_node_left = $("#" + parent_node).css("left").replace("px","");
-    parent_node_top = parseFloat(parent_node_top);
-    parent_node_left = parseFloat(parent_node_left);
-
-    top_pixels = parent_node_top + 100;
-    left_pixels = left_pixels + parent_node_left;
-
-    console.log("left_pixels");
-    console.log(left_pixels);
-  }
-  var this_button = $("<button>");
-  this_button.html(row.text)
+  */
+  var this_button = $("<button>")
     .addClass("btn")
     .addClass("btn-primary")
-    .addClass("flow-node")
-    .css("position", "absolute")
-    .css("top", top_pixels + "px")
-    .css("left", left_pixels + "px")
-    .css("display", "none")
-    .prop("id",row.location);
-  return this_button;
-}
+    .css("position", "fixed")
+    .css("top", "50%")
+    .css("left", "50%")
+    .css("text-align", "center")
+    .css("margin-right", "-50%")
+    .css("transform", "translate(-50%, -50%)")
+    .html(this_row.text);
+
+  $("body").append(this_button);
+
+  var new_generation = generation + 1;
+  var branches = this_row.branches.split(",");
+  var no_branches = branches.length;
+
+  var valid_degrees = 360 / generation;
+
+  var branch_degrees = valid_degrees/no_branches;
 
 
-var rows_to_process = [];
+  // convert to cartesian
 
-function add_button(this_button, row){
-  $("#map").append(this_button[0].outerHTML);
-  $("#" + row.location).fadeIn(500);
-  if(row.branches == ""){
-    // do nothing
-  } else {
-    var branches = row.branches.split(",");
-    branches.forEach(function(branch, branch_index){
-      var this_row = csv_data.filter(csv_row => csv_row.location == branch)[0];
-      rows_to_process.push([this_row, row_no+1, row.location, branch_index/branches.length]);
-    });
-  }
-  setTimeout(function(){
-    draw_node();
-  },200);
-}
 
-function draw_node(){
-  if(rows_to_process.length == 0){
-    //you're done
-  } else {
-    [row, row_no, parent_node, branch_index] = rows_to_process.shift();
-    /*
-    * move everything down if branch_index == 0
-    */
-    if(branch_index == 0){
-      $(".flow-node").animate({
-        left: "+=100",
-        top: "+=100"
-      },function(){
-        this_button = draw_button(row, parent_node, branch_index);
-        add_button(this_button, row);
-      })
-    } else {
-      this_button = draw_button(row, parent_node, branch_index);
-      add_button(this_button, row)
+  branches.forEach(function(this_location, branch_index){
+
+    var this_degrees = branch_index * branch_degrees;
+
+    var radius = 200;
+
+    var this_new_row = csv_data.filter(function(local_row){
+      return local_row.location == this_location;
+    })[0];
+    if(typeof(this_new_row) !== "undefined"){
+      draw_node(this_new_row, new_generation);
     }
-  }
+  });
+
+
 }
+
+/*
+* valid degrees (out of 360)
+  - divide by generation
+* direction (?out of 360?)
+*/
 
 var csv_data;
 $.get("flowdata.csv", function(data){
   csv_data = Papa.parse(data, {
     header: true }
   ).data;
-  console.log(csv_data);
-  rows_to_process.push([csv_data[0], 0, null, 1]);
-  draw_node();
 
-  /*
-
-  //console.log(csv_data);
-  csv_data.forEach(function(row){
-
-    /*
-    var flow_row = flow_map.findIndex(flow_row => flow_row.indexOf(row.location) !== -1);
-    if(typeof(flow_map[flow_row + 1]) == "undefined"){
-      flow_map[flow_row + 1] = [];
-    }
-    */
-  //});
+  draw_node(csv_data[0], 1);
 
 });
 
 /*
-* draw button
-var button_html = $("<button>");
-    button_html.addClass("btn btn-primary")
-      .html(row.text);
-$("#map").html($("#map").html() + button_html[0].outerHTML);
 
-/*
-* draw lines
-var branches = row.branches.split(",");
+
+  csv_data = Papa.parse(data, {
+    header: true }
+  ).data;
+  console.log(csv_data);
+  var this_row = [
+    csv_data[0], // first row
+    0,           // row_no
+    null,        // location
+    1            // branch_index/branches.length
+  ];
+
+})
 */
-
 </script>
