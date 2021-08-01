@@ -3,9 +3,11 @@ start,start,"Is the issue academic, administrative or personal?","b,c,d",,,start
 b,b,b,"b1,b2",,,b
 c,c,c,"c1,c2",,,c
 d,d,d,"d1,d2",,,d
-b1,b1,,,,,b1
+b1,b1,,"e1,e2",,,b1
 b2,b2,,,,,b2
 c1,c1,,,,,c1
 c2,c2,,,,,c2
 d1,d1,,,,,d1
 d2,d2,,,,,d2
+e1,e1,,,,,e1
+e2,e2,,,,,e2
