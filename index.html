@@ -59,23 +59,25 @@ function draw_node(this_row, generation, x_coordinate, y_coordinate, parent_degr
   var branches = this_row.branches.split(",");
   var no_branches = branches.length;
 
-  var valid_degrees = 360 / generation;
+  var valid_degrees = 360 / generation + 1;
 
   var branch_degrees = valid_degrees/no_branches;
-
-
-  // convert to cartesian
-
 
   branches.forEach(function(this_location, branch_index){
 
     var this_degrees = (branch_index + 1) * branch_degrees;
+    console.log("no_branches");
+    console.log(no_branches);
+    console.log("this_row.label");
+    console.log(this_row.label);
+    console.log("this_degrees");
+    console.log(this_degrees);
 
     var radius = 200;
     //parent_degrees = 0;
 
-    child_y_coordinate = y_coordinate + Math.sin((360-parent_degrees + this_degrees)*Math.PI/180) * radius;
-    child_x_coordinate = x_coordinate + Math.cos((360-parent_degrees + this_degrees)*Math.PI/180) * radius;
+    child_y_coordinate = y_coordinate + Math.sin((parent_degrees + this_degrees-90)*Math.PI/180) * radius;
+    child_x_coordinate = x_coordinate + Math.cos((parent_degrees + this_degrees-90)*Math.PI/180) * radius;
 
     var this_new_row = csv_data.filter(function(local_row){
       local_row.this_degrees = this_degrees;
@@ -110,7 +112,7 @@ $.get("flowdata.csv", function(data){
 
   draw_node(
     csv_data[0], // this_row
-    1,           // generation
+    0,           // generation
     0,           // x_coordinate
     0,           // y_coordinate
     0,           // parents degreed
