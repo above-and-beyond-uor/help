@@ -1,9 +1,11 @@
 ﻿choice,location,text,branches,parent,row_no,label
-start,start,"Is the issue academic, administrative or personal?","administrative,academic,bop",,,a
-Administrative,administrative,Is it about your timetable?,"burp,barp",,,b
-Academic,academic,Is it specific to one module?,"jin,jon",,,c
-beep,bop,hi there,,,,d
-burp,burp,,,,,burp
-barp,barp,,,,,barp
-jin,jin,,,,,jin
-jon,jon,,,,,jon
+start,start,"Is the issue academic, administrative or personal?","b,c,d",,,start
+b,b,b,"b1,b2",,,b
+c,c,c,"c1,c2",,,c
+d,d,d,"d1,d2",,,d
+b1,b1,,,,,b1
+b2,b2,,,,,b2
+c1,c1,,,,,c1
+c2,c2,,,,,c2
+d1,d1,,,,,d1
+d2,d2,,,,,d2

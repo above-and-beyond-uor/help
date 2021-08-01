@@ -32,7 +32,7 @@ border-style: ridge;
 <div id="map"></div>
 <script>
 
-function draw_node(this_row, generation, x_coordinate, y_coordinate){
+function draw_node(this_row, generation, x_coordinate, y_coordinate, parent_degrees){
   console.log("generation");
   console.log(generation);
 
@@ -47,9 +47,9 @@ function draw_node(this_row, generation, x_coordinate, y_coordinate){
     .css("left", "50%")
     .css("text-align", "center")
     //.css("margin-right", "-50%")
-    .css("margin-left", y_coordinate)
+    .css("margin-left", x_coordinate)
     .css("transform", "translate(-50%, -50%)")
-    .css("margin-top", x_coordinate)
+    .css("margin-top", y_coordinate)
     .html(this_row.label)
     .prop("id", this_row.location);
 
@@ -69,19 +69,23 @@ function draw_node(this_row, generation, x_coordinate, y_coordinate){
 
   branches.forEach(function(this_location, branch_index){
 
-    var this_degrees = branch_index * branch_degrees;
+    var this_degrees = (branch_index + 1) * branch_degrees;
 
     var radius = 200;
-    child_y_coordinate = y_coordinate + Math.sin(this_degrees*Math.PI/180) * radius;
-    child_x_coordinate = x_coordinate + Math.cos(this_degrees*Math.PI/180) * radius;
+    //parent_degrees = 0;
+
+    child_y_coordinate = y_coordinate + Math.sin((360-parent_degrees + this_degrees)*Math.PI/180) * radius;
+    child_x_coordinate = x_coordinate + Math.cos((360-parent_degrees + this_degrees)*Math.PI/180) * radius;
 
     var this_new_row = csv_data.filter(function(local_row){
+      local_row.this_degrees = this_degrees;
+      local_row.parent_degrees = parent_degrees;
       local_row.child_x_coordinate = child_x_coordinate;
       local_row.child_y_coordinate = child_y_coordinate;
       return local_row.location == this_location;
     })[0];
     if(typeof(this_new_row) !== "undefined"){
-      draw_node(this_new_row, new_generation, child_x_coordinate, child_y_coordinate);
+      draw_node(this_new_row, new_generation, child_x_coordinate, child_y_coordinate, this_degrees);
     }
   });
 /*
@@ -108,7 +112,8 @@ $.get("flowdata.csv", function(data){
     csv_data[0], // this_row
     1,           // generation
     0,           // x_coordinate
-    0            // y_coordinate
+    0,           // y_coordinate
+    0,           // parents degreed
   );
 
 
