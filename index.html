@@ -123,12 +123,14 @@ function draw_arrow(parent_node, child_node){
       document.getElementById(child_node),
         {
           color: "red",
+          animation: true,
+          endPlug: 'arrow1',
+          endSocket: "center",
+          path:  "magnet",
           size:  2,
           startSocket: "top",
-          endSocket: "center",
-          path:  "fluid",
           startPlug: 'behind',
-          endPlug: 'arrow1'
+          startPlugColor: '#a6f41d', gradient: true
         }
     );
   }
