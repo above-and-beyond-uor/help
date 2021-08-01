@@ -72,16 +72,16 @@ function draw_node(this_row, generation, x_coordinate, y_coordinate){
     var this_degrees = branch_index * branch_degrees;
 
     var radius = 200;
-    y_coordinate = Math.sin(this_degrees*Math.PI/180) * radius;
-    x_coordinate = Math.cos(this_degrees*Math.PI/180) * radius;
+    child_y_coordinate = y_coordinate + Math.sin(this_degrees*Math.PI/180) * radius;
+    child_x_coordinate = x_coordinate + Math.cos(this_degrees*Math.PI/180) * radius;
 
     var this_new_row = csv_data.filter(function(local_row){
-      local_row.x_coordinate = x_coordinate;
-      local_row.y_coordinate = y_coordinate;
+      local_row.child_x_coordinate = child_x_coordinate;
+      local_row.child_y_coordinate = child_y_coordinate;
       return local_row.location == this_location;
     })[0];
     if(typeof(this_new_row) !== "undefined"){
-      draw_node(this_new_row, new_generation, x_coordinate, y_coordinate);
+      draw_node(this_new_row, new_generation, child_x_coordinate, child_y_coordinate);
     }
   });
 /*
